@@ -3,8 +3,8 @@
 #Warn All
 #Warn LocalSameAsGlobal, Off
 
-Width := 400
-Height := 400
+Width := 800
+Height := 600
 DurationLimit := 1 / 20
 
 global Infinity := 0xFFFFFFFFFFFFFFF
@@ -12,6 +12,7 @@ global Infinity := 0xFFFFFFFFFFFFFFF
 SetBatchLines, -1
 
 s := new Canvas.Surface(Width,Height)
+s.Smooth := "Best"
 p := new Parasol
 
 Gui, +LastFound
@@ -49,17 +50,36 @@ ExitApp
 
 Initialize()
 {
-    global b := new Canvas.Brush(0xFFFF0000)
+    global b := new Canvas.Brush(0xFFFFFFFF)
+    global f := new Canvas.Format("Georgia",36)
 }
 
 Step(Duration)
 {
     global s
     global b
-    b.Color := (b.Color & 0xFFFFFF) | ((((b.Color >> 24) + 1) & 0xFF) << 24)
-    SetFormat, Integer, H
-    s.Clear()
-     .FillEllipse(b,100,100,200,200)
+    global f
+    static Timer := 0
+
+    Timer += Duration
+    If Timer < 1
+    {
+        Alpha := Floor(Timer * 0xFF)
+        b.Color := (b.Color & 0xFFFFFF) | ((Alpha & 0xFF) << 24)
+    }
+    Else If Timer < 2
+    {
+    }
+    Else If Timer < 3
+    {
+        Alpha := Floor((2 - Timer) * 0xFF)
+        b.Color := (b.Color & 0xFFFFFF) | ((Alpha & 0xFF) << 24)
+    }
+    If Timer < 3
+    {
+        s.Clear()
+         .Text(b,f,"Uberi & Ton80 present",50,500)
+    }
 }
 Return
 
