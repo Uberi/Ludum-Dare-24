@@ -87,9 +87,9 @@ class Surface
     {
         Attributes := FileExist(Path)
         If !Attributes ;path does not exist
-            throw Exception("INVALID_INPUT",-1,"Invalid path")
+            throw Exception("INVALID_INPUT",-1,"Invalid path: " . Path)
         If InStr(Attributes,"D") ;path is not a file
-            throw Exception("INVALID_INPUT",-1,"Invalid file")
+            throw Exception("INVALID_INPUT",-1,"Invalid file: " . Path)
         pBitmap := 0
         this.CheckStatus(DllCall("gdiplus\GdipCreateBitmapFromFile", "WStr",Path,"UPtr*",pBitmap)
             ,"GdipCreateBitmapFromFile","Could not create bitmap from file")
@@ -252,7 +252,7 @@ class Surface
         pBitmap := 0
         this.CheckStatus(DllCall("gdiplus\GdipCreateBitmapFromHBITMAP","UPtr",Surface.hBitmap,"UPtr",0,"UPtr*",pBitmap)
             ,"GdipCreateBitmapFromHBITMAP","Could not obtain bitmap pointer from bitmap handle")
-        this.CheckStatus(DllCall("gdiplus\GdipDrawImageRectRect","UPtr",this.pGraphics,"UPtr",pBitmap
+        Return, this.CheckStatus(DllCall("gdiplus\GdipDrawImageRectRect","UPtr",this.pGraphics,"UPtr",pBitmap
             ,"Float",X,"Float",Y,"Float",W,"Float",H
             ,"Float",SourceX,"Float",SourceY,"Float",SourceW,"Float",SourceH
             ,"Int",2,"UPtr",0,"UPtr",0,"UPtr",0) ;Unit.UnitPixel

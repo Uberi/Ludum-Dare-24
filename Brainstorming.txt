@@ -1,0 +1,66 @@
+Theme: Evolution
+
+Game making is hard if it's too open ended. I've tried to decide on a few things to make the details more concrete
+
+* How can we interpret this creatively and uniquely?
+* well obviously it has to be better somehow than the original idea
+* well really there's not many other ways you can interpret it
+* I mean it's just change over something, right?
+* well anything feasible, anyways <= better go with the original interpretation, then, I guess
+* What is evolution?
+    * Change across generations
+    * Generations of what?
+        * Machines <= but this is cool too
+        * Scenery/world <= I like this
+        * Microorganisms <= DONE TOO MANY TIMES
+        * Animals <= too much like Spore, also infeasible
+* What kind of gameplay?
+    * realtime control <= definitely this
+    * set and watch
+* What are the goal(s)?
+    * Evolve best something? <= well, duh
+    * get to evolve!
+        * salmon run comes to mind
+            * nice and achievable!
+    * Oh, idea: evolve universe until the player finds something! <= I like this
+        * requires control of the scenery directly or indirectly
+            * I like indirectly, but have to make it engaging
+        * how about creating life? <= whoa awesome
+        * maybe the player goes back in time and tries to change history and evolve things for the better?
+            * this will have to be short term, don't have time for anything too extensive
+    * Evolve machines until they achieve sentience? <= on second thought this is cooler
+* What are the obstacle(s)?
+    * Evolution, obviously <= how uncreative
+    * limited resources <= no way I hate those games
+    * other evolving things making it difficult to evolve the things you want <= yeah this is good
+    * butterfly effect <= nah too hard to implement
+* What are the mechanisms by which the player interacts with stuff? <= WORK ON THIS
+    * some sort of mouse control is gonna be necessary
+    * or maybe I'll think up of some wierd keyboard control scheme, I dunno
+    * anyways just need to have a way to modify stuff
+* Visual style?
+    * no time for full-color sprites, I think
+        * also I don't have much skill in the art department
+    * something with text in it!
+        * by this I mean not a text based thing, but something that uses typography to complement the graphics
+    * infinite canvas, somewhere
+    * put an owl in, just because <= o/ tidbit
+        * yay done
+        * now it's a kangaroo!
+    * top down, side scrolling, or what? something 2D, since 3D is a royal pain
+        * well really those are the only two options
+        * I'm going to vouch for top down, since side view implies gravity, a planet, and everything
+* what's the scale?
+* I basically see 3 possible options
+* microscopic (bacteria, virii, nanorobots, etc.) <= done a lot of times, but still room for improvement and creativity
+* normal sized (humans, animals) <= waaay too difficult to get the details right, you every try evolving humans? still, it makes for the best results whne done right
+* big sized (planets, galaxies) <= hey! I think not too many people are doing this!
+
+To summarize:
+
+    * realtime control
+    * evolving stuff faces competition from other evolving stuff
+    * normal sized scale?
+    * goal is to create life/perpetuate it?
+    * minimal graphics unless we have time to spare
+    * sidescrolling salmon-run-esque game

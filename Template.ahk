@@ -68,6 +68,8 @@ StepStart(Duration)
     static Timer := 0
     Timer += Duration
 
+    s.Clear()
+
     If Timer < 1
     {
         Alpha := Floor(Timer * 0xFF)
@@ -83,8 +85,7 @@ StepStart(Duration)
     }
     If Timer < 4
     {
-        s.Clear()
-         .Text(b,Subtitle,"Uberi & Ton80 present",50,500)
+        s.Text(b,Subtitle,"Uberi & Ton80 present",50,500)
     }
 
     If Timer > 5
@@ -95,8 +96,7 @@ StepStart(Duration)
             b.Color := (b.Color & 0xFFFFFF) | ((Alpha & 0xFF) << 24)
         }
 
-        s.Clear()
-         .Text(b,Title,"GAME NAME HERE",50,200)
+        s.Text(b,Title,"GAME NAME HERE",50,200)
          .Text(b,Subtitle,"Made, with love, during Ludum Dare #24",50,500)
     }
 }

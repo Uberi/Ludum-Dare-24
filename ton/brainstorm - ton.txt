@@ -1,0 +1,92 @@
+Evolution
+---------
+
+Salmon - fighting to get upstream to spawn
+	-?? starts in open sea, where his biggest threats are other fish, and fishermen, etc(maybe some commercial fishing nets)
+	-works his way to mouth of river, where the threats are more bears, fishermen, waterfalls, currents, etc
+	-
+
+
+
+Dangers
+-------
+birds, bears, fishermen, waterfalls?(may be tough?), predatory fish?, time?
+	-hover too close to top for too long, and the sea gulls/eagles sure to get you
+	-too close to bottom and? big bad crab? lol
+	-avoid the fishermens hooks
+	-must eat to stay strong(energy)
+	-currents, stronger currents use more energy to swim through
+
+
+time, energy
+
+
+
+side scroller
+
+
+gdi layers
+
+mem, and overlay.. mem to contain just roughed water and sky
+
+overlay to contain all other scenery
+	-plants from bottom of seabed
+	-bubbles
+	-rocks on bottom
+	-other fish
+	-clouds
+	-sun
+	-birds
+	-our fishy
+
+
+
+current task:
+
+create sea(river) floor, should have gradual elevation changes, will add rocks etc later.
+
+
+controls -
+can swim only to the right, however you can swim faster/slower, but the screen shall always be scrolling at least some to the right.. 
+
+
+
+
+
+
+uberi - what i have isnt much lol.. and my coding syntax/style is sloppy and sucks compared to yours, this is just a rough (real rough), initial layout, the cell thing may not be needed, and can easily be removed, i added it just in case for now, but im thinking it wont be necessary.. 
+
+the clouds, etc, etc show be an an array, and when it goes off screen, can be a removed from array..
+
+i usually implement a 'how many pixels per meter' formula for scroll speed of all objects, and use time..
+
+example
+
+10 pixels per meter, fish speed = 3 meters per sec, and theni can always calc the position of the fish, reguardless of the speed of the cpu its running on.. similiar to what you do with query performance counter.. 
+
+i drew the clouds real quick, i was going to keep all sprites on 1 sheet, and keep them 64x64 for simplicity.. 
+
+
+i wont be around til late afternoon or evening saturday.. feel free to change/scrap anything.
+
+
+i was trying to come up with a way to draw the seabed, so it has some elevation changes, etc. 
+
+also the sky, water, etc are just solid colors, but we can easily apply textures :)
+
+the cloud movements, and most of this was just to show what i was trying to do here.. :P
+have fun!
+
+
+8/25 928am
+made a couple of more crude looking sprites -
+the script is just showing how the sprites look, i suck at art... 
+
+notes - water doesnt look like water
+
+still need a sea floor, can add a generic that is flat, but slight slopes would be better
+also a ripple or something for the water surface would go a long way.. 
+
+Uberi: neat! you should also take a look at the style I'm envisioning - "vintage" style with public domain graphics (a la WonderMark). I think this might be an improvement compared to hand-drawn graphics, considering I can't draw an ellipse without the ellipse tool or a square without a square tool and a general lack of time.
+Uberi: I'm thinking the music fits that sort of thing best, although this is a great start
+Uberi: also, what's up with the CPU usage? :P
