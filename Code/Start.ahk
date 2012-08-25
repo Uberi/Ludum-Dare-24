@@ -8,7 +8,7 @@ InitializeStart()
     Prompt.Align := "Center"
     Subtitle := new Canvas.Format("Georgia",14)
     Subtitle.Italic := True
-    Kangaroo := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Kangaroo Start.jpg")
+    Kangaroo := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Kangaroo Title.jpg")
 }
 
 StepStart(Duration)
@@ -19,9 +19,6 @@ StepStart(Duration)
     static Timer := 0
 
     s.Clear()
-
-    If Timer = 0
-        SoundPlay, %A_ScriptDir%\Sounds\Weeping Willow.mp3
 
     If Timer < 1
     {

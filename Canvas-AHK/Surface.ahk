@@ -250,13 +250,16 @@ class Surface
         this.CheckRectangle(SourceX,SourceY,SourceW,SourceH)
 
         pBitmap := 0
-        this.CheckStatus(DllCall("gdiplus\GdipCreateBitmapFromHBITMAP","UPtr",Surface.hBitmap,"UPtr",0,"UPtr*",pBitmap)
+        this.CheckStatus(DllCall("gdiplus\GdipCreateBitmapFromHBITMAP","UPtr",Surface.hBitmap,"UPtr",0,"UPtr*",pBitmap) ;create temporary bitmap object
             ,"GdipCreateBitmapFromHBITMAP","Could not obtain bitmap pointer from bitmap handle")
-        Return, this.CheckStatus(DllCall("gdiplus\GdipDrawImageRectRect","UPtr",this.pGraphics,"UPtr",pBitmap
+        this.CheckStatus(DllCall("gdiplus\GdipDrawImageRectRect","UPtr",this.pGraphics,"UPtr",pBitmap
             ,"Float",X,"Float",Y,"Float",W,"Float",H
             ,"Float",SourceX,"Float",SourceY,"Float",SourceW,"Float",SourceH
             ,"Int",2,"UPtr",0,"UPtr",0,"UPtr",0) ;Unit.UnitPixel
             ,"GdipDrawImageRectRect","Could not transfer image data to surface")
+        this.CheckStatus(DllCall("gdiplus\GdipDisposeImage","UPtr",pBitmap) ;delete temporary bitmap object
+            ,"GdipDisposeImage","Could not delete bitmap pointer")
+        Return, this
     }
 
     DrawArc(Pen,X,Y,W,H,Start,Sweep)

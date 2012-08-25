@@ -21,8 +21,10 @@ hDC := DllCall("GetDC","UPtr",hWindow,"UPtr")
 
 Gui, Show, w%Width% h%Height%, Physics Test
 
-InitializeStart()
-Activate(hDC,s,p,Func("StepStart"),DurationLimit)
+SoundPlay, %A_ScriptDir%\Sounds\Maple Leaf.mp3
+
+;InitializeStart()
+;Activate(hDC,s,p,Func("StepStart"),DurationLimit)
 
 InitializeGame()
 Activate(hDC,s,p,Func("StepGame"),DurationLimit)
@@ -33,6 +35,18 @@ Return
 
 GuiClose:
 ExitApp
+
+TransparentCopy(Surface1,Surface2,Color,X,Y,W,H,SourceX = 0,SourceY = 0,SourceW = "",SourceH = "")
+{
+    If (SourceW = "")
+        SourceW := Surface1.Width
+    If (SourceH = "")
+        SourceH := Surface1.Height
+    If !DllCall("TransparentBlt","UPtr",Surface2.hMemoryDC,"Int",X,"Int",Y,"Int",W,"Int",H
+        ,"UPtr",Surface1.hMemoryDC,"Int",SourceX,"Int",SourceY,"Int",SourceW,"Int",SourceH
+        ,"UInt",Color)
+        throw Exception("It's not you, it's me.")
+}
 
 Activate(hDC,Surface,Parasol,Step,DurationLimit)
 {
@@ -63,8 +77,8 @@ Activate(hDC,Surface,Parasol,Step,DurationLimit)
 KeyState(Key)
 {
     global hWindow
-    ;If !WinActive("ahk_id " . hWindow)
-        ;Return, False
+    If !WinActive("ahk_id " . hWindow)
+        Return, False
     If GetKeyState(Key,"P")
         Return, True
     Return, False
@@ -114,7 +128,6 @@ Execute(Script,Parameters = "")
     Return, ScriptPID
 }
 
-#Include Parasol\Physics.ahk
 #Include Parasol\Parasol.ahk
 
 #Include Canvas-AHK\
