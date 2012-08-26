@@ -12,7 +12,11 @@ InitializeGame()
     Fisherman2 := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Fisherman 2.png")
     Coral := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Coral.png")
     Shell := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Shells.png")
+    Water := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Water.png")
     Clouds := new Canvas.Surface(0,0,A_ScriptDir . "\Images\Clouds.png")
+
+    CurrentEvolution := Fish
+    Available := [Elephant,Goat]
 
     FishEntity := new p.Entity(400,400)
     FishEntity.RotationalInertia := 200
@@ -27,13 +31,16 @@ InitializeGame()
 
 StepGame(Duration)
 {
-    global s, Fish, Elephant, Goat, Kangaroo, Fisherman1, Fisherman2, Clouds, Waves, Riverbed, Coral, Shell
+    global s, Fish, Elephant, Goat, Kangaroo, Fisherman1, Fisherman2, Clouds, Waves, Riverbed, Coral, Shell, Water
     global FishEntity, FishBuoyancy
     global LiquidLevel
     static CameraX := 0, CameraY := 0
     static InWater := True, LastOut := 0
     static CloudX := 200, CloudY := -100
     static CoralX := 800, ShellX := 400
+    static DisplayAngle := 0
+    global CurrentEvolution, Available
+    static CurrentTimer := 0
 
     Weight := Duration
     CameraX := (CameraX * (1 - Weight)) + ((FishEntity.X - 100) * Weight)
@@ -42,6 +49,7 @@ StepGame(Duration)
         CameraY := 90
 
     s.Clear(0xFFFFFFFF)
+     .Draw(Water,0,(LiquidLevel - CameraY),800,500)
      .Draw(Waves,Mod(-CameraX,800),(LiquidLevel - CameraY) - (Waves.Height * 0.5),Waves.Width,Waves.Height)
      .Draw(Waves,Mod(-CameraX,800) + 800,(LiquidLevel - CameraY) - (Waves.Height * 0.5),Waves.Width,Waves.Height)
      .Draw(Riverbed,Mod(-CameraX,800),((LiquidLevel + 300) - CameraY),Riverbed.Width,Riverbed.Height)
@@ -81,7 +89,22 @@ StepGame(Duration)
 
     Depth := FishEntity.Y - LiquidLevel
 
-    If KeyState("j")
+    If (CurrentEvolution = Fish)
+    {
+        If KeyState("Space") && Available.MaxIndex()
+        {
+            CurrentEvolution := Available.Remove(1)
+            CurrentTimer := 6
+        }
+    }
+    Else
+    {
+        CurrentTimer -= Duration
+        If CurrentTimer <= 0
+            CurrentEvolution := Fish
+    }
+
+    If (CurrentEvolution = Elephant)
     {
         FishBuoyancy.Volume := 500
         s.Draw(Elephant,Elephant.Width * -0.3,Elephant.Height * -0.3,Elephant.Width * 0.6,Elephant.Height * 0.6)
@@ -92,7 +115,7 @@ StepGame(Duration)
             LastOut := A_TickCount
         }
     }
-    Else If KeyState("k")
+    Else If (CurrentEvolution = Goat)
     {
         FishBuoyancy.Volume := 400
         s.Draw(Goat,Goat.Width * -0.2,Goat.Height * -0.2,Goat.Width * 0.4,Goat.Height * 0.4)
@@ -120,8 +143,17 @@ StepGame(Duration)
         InWater := False
 
     s.Pop()
-
     s.Pop()
+
+    For Index, Evolution In Available
+    {
+        s.Push()
+         .Translate((Index * 150) - 50,500)
+         .Rotate(DisplayAngle)
+         .Draw(Evolution,-50,-50,100,100)
+         .Pop()
+    }
+    DisplayAngle += Duration * 200
 }
 
 class KeyboardController

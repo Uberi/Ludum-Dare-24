@@ -46,7 +46,10 @@ StepStart(Duration)
          .Text(White,Subtitle,"Lovingly crafted during Ludum Dare #24 (theme: evolution)",350,550)
 
         If KeyState("Space")
+        {
+            KeyWait, Space
             Return, True
+        }
     }
 
     Timer += Duration

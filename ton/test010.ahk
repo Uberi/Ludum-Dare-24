@@ -19,8 +19,6 @@ loop
 				If (GetKeyState(A_Loopfield, "P"))
 					gosub, %a_loopfield%
 		
-		;player.x -= board.width *.0001
-		;player.speed -= 1
 		gosub, check_collision
 		gosub, move_sprites
 		gosub, draw_sprites
@@ -80,10 +78,9 @@ return
 
 
 move_sprites:
-plant1.offset(offset)
-plant2.offset(offset)
-plant3.offset(offset)
-plant4.offset(offset)
+for index, sprite in plants
+	plants[index].offset(offset)
+
 
 cloud1.offset(offset_cloud)	
 cloud2.offset(offset_cloud)	
@@ -106,13 +103,12 @@ draw_transparent(cloud2.x,cloud2.y,cloud2.width,cloud2.height,cloud2.source_x,cl
 draw_transparent(cloud3.x,cloud3.y,cloud3.width,cloud3.height,cloud3.source_x,cloud3.source_y,cloud3.source_width,cloud3.source_height)
 draw_transparent(cloud4.x,cloud4.y,cloud4.width,cloud4.height,cloud4.source_x,cloud4.source_y,cloud4.source_width,cloud4.source_height)
 
-draw_transparent(plant1.x,plant1.y,plant1.width,plant1.height,plant1.source_x,plant1.source_y,plant1.source_width,plant1.source_height)
-draw_transparent(plant2.x,plant2.y,plant2.width,plant2.height,plant2.source_x,plant2.source_y,plant2.source_width,plant2.source_height)
-draw_transparent(plant3.x,plant3.y,plant3.width,plant3.height,plant3.source_x,plant3.source_y,plant3.source_width,plant3.source_height)
-draw_transparent(plant4.x,plant4.y,plant4.width,plant4.height,plant4.source_x,plant4.source_y,plant4.source_width,plant4.source_height)
+
+for index, sprite in plants
+	draw_transparent(plants[index].x,plants[index].y,plants[index].width,plants[index].height,plants[index].source_x,plants[index].source_y,plants[index].source_width,plants[index].source_height)
+
 
 draw_transparent(player.x,player.y,player.width,player.height,player.source_x,player.source_y,player.source_width,player.source_height)
-
 draw_transparent(shark1.x,shark1.y,shark1.width,shark1.height,shark1.source_x,shark1.source_y,shark1.source_width,shark1.source_height)
 
 return
@@ -163,10 +159,17 @@ cloud3 := new cloud(3,board.width *.3,10)
 cloud4 := new cloud(4,board.width *.1,20)
 
 ;__new(xpos,ypos,height,width,direction,source_x,source_y,source_width,source_height,animated=0,frame=0,frame_count=0,frame_delay=0,frame_lastchange=0,isEnemy=0,isFood=0,player_death_type=0){
-plant1 := new sprite(board.width,board.height *.8,board.height * .1, board.width * .1,1,0,64,64,64)
-plant2 := new sprite(board.width * .7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
-plant3 := new sprite(board.width * .5,board.height *.8,board.height * .1, board.width * .1,1,128,64,64,64)
-plant4 := new sprite(board.width * .3,board.height *.8,board.height * .1, board.width * .1,1,192,64,64,64)
+;plant1 := new sprite(board.width,board.height *.8,board.height * .1, board.width * .1,1,0,64,64,64)
+;plant2 := new sprite(board.width * .7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
+;plant3 := new sprite(board.width * .5,board.height *.8,board.height * .1, board.width * .1,1,128,64,64,64)
+;plant4 := new sprite(board.width * .3,board.height *.8,board.height * .1, board.width * .1,1,192,64,64,64)
+
+plants := [new sprite(board.width,board.height *.8,board.height * .1, board.width * .1,1,0,64,64,64)
+			,new sprite(board.width * .7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
+			,new sprite(board.width * .5,board.height *.8,board.height * .1, board.width * .1,1,128,64,64,64)
+			,new sprite(board.width * .3,board.height *.8,board.height * .1, board.width * .1,1,192,64,64,64)]
+
+;MsgBox % plants[1].x
 
 shark1 := new sprite(board.width *.7,board.height *.7,board.height * .15, board.width *.2,1,0,268,64,31)
 
@@ -264,38 +267,6 @@ CreateBitmapMask(hbmColor, crTransparent)
 ;1 point should always be x0, and another should always be => board.width
 ;
 
-class seaweed
-{
-	__New(type,xpos,ypos){			;type is which sprite to use, 1-4
-	if (type = 1)
-		this.source_x := 0
-	else if (type = 2)
-		this.source_x := 64
-	else if (type = 3)
-		this.source_x := 128
-	else 
-		this.source_x := 192
-	this.height := 100	;board.height * .2
-	this.width := 200	;board.width *.15
-	this.x := xpos
-	this.y := ypos
-	this.source_y := 64
-	this.source_height := 64
-	this.source_width := 64
-	}
-	
-	Offset(x=0,y=0){
-	this.x -= x
-	this.y += y
-	
-	if (this.x + this.width < 0)
-		{
-			random, newX,2000, 3000
-			this.x := newX
-		}
-	}
-}
-
 class cloud
 {
 	__New(type,xpos,ypos){			;type is which sprite to use, 1-4
@@ -322,15 +293,6 @@ class cloud
 	this.y += y
 	}
 }
-
-class rocks
-{}
-	
-class random_fish
-{}
-	
-class predator_fish
-{}
 	
 class sprite
 {

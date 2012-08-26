@@ -13,14 +13,12 @@ loop
 		time_elapsed := (A_TickCount - time_update) / 1000
 		time_update := A_TickCount
 		offset := player.speed * time_elapsed
-		offset_cloud := cloud1.speed * time_elapsed
+		offset_cloud := 2 * time_elapsed
 		
 		Loop, Parse, all_controls, csv
 				If (GetKeyState(A_Loopfield, "P"))
 					gosub, %a_loopfield%
 		
-		;player.x -= board.width *.0001
-		;player.speed -= 1
 		gosub, check_collision
 		gosub, move_sprites
 		gosub, draw_sprites
@@ -67,7 +65,8 @@ if (player.source_x > 192)
 return
 
 check_collision:
-if (player.x + player.width >= shark1.x) && (player.y >= shark1.y) && (player.x <= shark1.x + shark1.width) && (player.y <= shark1.y + shark1.height)
+for index, sprite in enemies
+	if (player.x + player.width >= enemies[index].x) && (player.y >= enemies[index].y) && (player.x <= enemies[index].x + enemies[index].width) && (player.y <= enemies[index].y + enemies[index].height)
 	{
 		player.source_x += 64
 		sleep, 100
@@ -76,45 +75,37 @@ if (player.source_x > 192)
 	player.x :=100, player.source_x := 0
 return
 
-
-
-
 move_sprites:
-plant1.offset(offset)
-plant2.offset(offset)
-plant3.offset(offset)
-plant4.offset(offset)
+for index, sprite in plants
+	plants[index].offset(offset)
 
-cloud1.offset(offset_cloud)	
-cloud2.offset(offset_cloud)	
-cloud3.offset(offset_cloud)	
-cloud4.offset(offset_cloud)
+for index, sprite in clouds
+	clouds[index].offset(offset_cloud)
 
-if (shark1.direction = 1)
-	shark1.offset(offset,-.3)
-else
-	shark1.offset(offset,+.3)
-if (shark1.y + shark1.height >= seabed.y1 && shark1.direction = 3)
-	shark1.direction := 1
-else if (shark1.y <= water.y1 && shark1.direction = 1)
-	shark1.direction := 3
+for index, sprite in enemies
+	{
+		if (enemies[index].direction = 1)
+			enemies[index].offset(offset,-.3)
+		else
+			enemies[index].offset(offset,+.3)
+		if (enemies[index].y + enemies[index].height >= seabed.y1 && enemies[index].direction = 3)
+			enemies[index].direction := 1
+		else if (enemies[index].y <= water.y1 && enemies[index].direction = 1)
+			enemies[index].direction := 3
+	}
 return
 
 draw_sprites:
-draw_transparent(cloud1.x,cloud1.y,cloud1.width,cloud1.height,cloud1.source_x,cloud1.source_y,cloud1.source_width,cloud1.source_height)
-draw_transparent(cloud2.x,cloud2.y,cloud2.width,cloud2.height,cloud2.source_x,cloud2.source_y,cloud2.source_width,cloud2.source_height)
-draw_transparent(cloud3.x,cloud3.y,cloud3.width,cloud3.height,cloud3.source_x,cloud3.source_y,cloud3.source_width,cloud3.source_height)
-draw_transparent(cloud4.x,cloud4.y,cloud4.width,cloud4.height,cloud4.source_x,cloud4.source_y,cloud4.source_width,cloud4.source_height)
+for index, sprite in clouds
+	draw_transparent(clouds[index].x,clouds[index].y,clouds[index].width,clouds[index].height,clouds[index].source_x,clouds[index].source_y,clouds[index].source_width,clouds[index].source_height)
 
-draw_transparent(plant1.x,plant1.y,plant1.width,plant1.height,plant1.source_x,plant1.source_y,plant1.source_width,plant1.source_height)
-draw_transparent(plant2.x,plant2.y,plant2.width,plant2.height,plant2.source_x,plant2.source_y,plant2.source_width,plant2.source_height)
-draw_transparent(plant3.x,plant3.y,plant3.width,plant3.height,plant3.source_x,plant3.source_y,plant3.source_width,plant3.source_height)
-draw_transparent(plant4.x,plant4.y,plant4.width,plant4.height,plant4.source_x,plant4.source_y,plant4.source_width,plant4.source_height)
+for index, sprite in plants
+	draw_transparent(plants[index].x,plants[index].y,plants[index].width,plants[index].height,plants[index].source_x,plants[index].source_y,plants[index].source_width,plants[index].source_height)
+
+for index, sprite in enemies
+	draw_transparent(enemies[index].x,enemies[index].y,enemies[index].width,enemies[index].height,enemies[index].source_x,enemies[index].source_y,enemies[index].source_width,enemies[index].source_height)
 
 draw_transparent(player.x,player.y,player.width,player.height,player.source_x,player.source_y,player.source_width,player.source_height)
-
-draw_transparent(shark1.x,shark1.y,shark1.width,shark1.height,shark1.source_x,shark1.source_y,shark1.source_width,shark1.source_height)
-
 return
 
 update_screen:			;blit buffer dc to window
@@ -128,7 +119,6 @@ return
 initialize_variables:
 ;notes
 ;all speeds are in meters per second
-
 board := {width:A_ScreenWidth,height:A_ScreenHeight,x:0,y:0,backcolor: 0x32C7F0,scale:1,width_meters:160,height_meters:90}
 board.width *= board.scale, board.height *= board.scale
 
@@ -156,22 +146,25 @@ NumPut(seabed.x1,ptSeabed,0), NumPut(seabed.y1, ptSeabed, 4),NumPut(seabed.x2,pt
 time_update := A_TickCount
 return
 
-initialize_objects:  ;this  just for testing
-cloud1 := new cloud(1,board.width * .9,10)
-cloud2 := new cloud(2,board.width *.7,20)
-cloud3 := new cloud(3,board.width *.3,10)
-cloud4 := new cloud(4,board.width *.1,20)
-
+initialize_objects: 
 ;__new(xpos,ypos,height,width,direction,source_x,source_y,source_width,source_height,animated=0,frame=0,frame_count=0,frame_delay=0,frame_lastchange=0,isEnemy=0,isFood=0,player_death_type=0){
-plant1 := new sprite(board.width,board.height *.8,board.height * .1, board.width * .1,1,0,64,64,64)
-plant2 := new sprite(board.width * .7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
-plant3 := new sprite(board.width * .5,board.height *.8,board.height * .1, board.width * .1,1,128,64,64,64)
-plant4 := new sprite(board.width * .3,board.height *.8,board.height * .1, board.width * .1,1,192,64,64,64)
+clouds := [new sprite(board.width * .9,10,board.height * .2,board.width * .15,0,0,0,64,64)
+			,new sprite(board.width * .7,20,board.height * .2,board.width * .15,0,64,0,64,64)
+			,new sprite(board.width * .3,10,board.height * .2,board.width * .15,0,128,0,64,64)
+			,new sprite(board.width * .1,20,board.height * .2,board.width * .15,0,192,0,64,64)]
 
-shark1 := new sprite(board.width *.7,board.height *.7,board.height * .15, board.width *.2,1,0,268,64,31)
 
+plants := [new sprite(board.width,board.height *.8,board.height * .1, board.width * .1,1,0,64,64,64)	;also rocks
+			,new sprite(board.width * .7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
+			,new sprite(board.width * .5,board.height *.8,board.height * .1, board.width * .1,1,128,64,64,64)
+			,new sprite(board.width * .3,board.height *.8,board.height * .1, board.width * .1,1,192,64,64,64)
+			,new sprite(board.width * .1,board.height *.85,board.height * .1, board.width * .1,1,0,128,64,64)
+			,new sprite(board.width * .2,board.height *.85,board.height * .1, board.width * .1,1,64,128,64,64)
+			,new sprite(board.width * .6,board.height *.85,board.height * .1, board.width * .1,1,128,128,64,64)
+			,new sprite(board.width * .8,board.height *.85,board.height * .1, board.width * .1,1,192,128,64,64)]
+
+enemies := [new sprite(board.width *.7,board.height *.7,board.height * .15, board.width *.2,1,0,268,64,31)]
 return
-
 
 initialize_graphics:
 gui, -caption
@@ -207,8 +200,6 @@ DllCall("SelectObject", "uint", hdcBackground, "uint", pen_black)
 hbmBM := DllCall("LoadImage", "int", 0, str, "sprites006.bmp", "int", 0, "int", 0, "int",0, "uint", 0x2010)
 maskBM := CreateBitMapMask(hbmBM, 0x1DE6B5)
 
-
-
 ;redraw rough water, sky, seabed,and sun ; this wont change, so draw them now.
 DllCall("FillRect", "uint", hdcBackground, "uint", &ptWater, "uint", brush_Water)
 DllCall("FillRect", "uint", hdcBackground, "uint", &ptSky, "uint", brush_Sky)
@@ -227,10 +218,6 @@ loop, parse, all_dcs, csv
 loop, parse, all_objects, csv
 	DllCall("DeleteObject", uint, %a_loopfield%)
 ExitApp
-
-
-
-;functions
 
 draw_transparent(destX,destY,destW,destH,sourceX,sourceY,sourceW,sourceH){
 	global
@@ -259,79 +246,6 @@ CreateBitmapMask(hbmColor, crTransparent)
 	return hbmMask
 }
 
-;constantly generate a point structure for a polygon
-;points should start at from board.width to board.width * 1.5
-;1 point should always be x0, and another should always be => board.width
-;
-
-class seaweed
-{
-	__New(type,xpos,ypos){			;type is which sprite to use, 1-4
-	if (type = 1)
-		this.source_x := 0
-	else if (type = 2)
-		this.source_x := 64
-	else if (type = 3)
-		this.source_x := 128
-	else 
-		this.source_x := 192
-	this.height := 100	;board.height * .2
-	this.width := 200	;board.width *.15
-	this.x := xpos
-	this.y := ypos
-	this.source_y := 64
-	this.source_height := 64
-	this.source_width := 64
-	}
-	
-	Offset(x=0,y=0){
-	this.x -= x
-	this.y += y
-	
-	if (this.x + this.width < 0)
-		{
-			random, newX,2000, 3000
-			this.x := newX
-		}
-	}
-}
-
-class cloud
-{
-	__New(type,xpos,ypos){			;type is which sprite to use, 1-4
-	if (type = 1)
-		this.source_x := 0
-	else if (type = 2)
-		this.source_x := 64
-	else if (type = 3)
-		this.source_x := 128
-	else 
-		this.source_x := 192
-	this.height := 300	;board.height * .2
-	this.width := 500	;board.width *.15
-	this.speed := 2
-	this.x := xpos
-	this.y := ypos
-	this.source_y := 0
-	this.source_height := 64
-	this.source_width := 64
-	}
-	
-	Offset(x=0,y=0){
-	this.x -= x
-	this.y += y
-	}
-}
-
-class rocks
-{}
-	
-class random_fish
-{}
-	
-class predator_fish
-{}
-	
 class sprite
 {
 	__new(xpos,ypos,height,width,direction,source_x,source_y,source_width,source_height,animated=0,frame=0,frame_count=0,frame_delay=0,frame_lastchange=0,isEnemy=0,isFood=0,player_death_type=0){

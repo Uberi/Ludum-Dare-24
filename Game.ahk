@@ -12,7 +12,6 @@ global Infinity := 0xFFFFFFFFFFFFFFF
 SetBatchLines, -1
 
 s := new Canvas.Surface(Width,Height)
-s.Smooth := "Best"
 p := new Parasol
 
 Gui, Add, Text, x0 y0 w%Width% h%Height% hwndhControl +0xE ;SS_BITMAP
@@ -24,10 +23,10 @@ hWindow := WinExist()
 
 Gui, Show, w%Width% h%Height%, Evolutionary
 
-SoundPlay, %A_ScriptDir%\Sounds\Maple Leaf.mp3
+PlayAsync(A_ScriptDir . "\Sounds\Maple Leaf.mp3",True)
 
-;InitializeStart()
-;Activate(v,s,p,Func("StepStart"),DurationLimit)
+InitializeStart()
+Activate(v,s,p,Func("StepStart"),DurationLimit)
 
 InitializeGame()
 Activate(v,s,p,Func("StepGame"),DurationLimit)
@@ -75,14 +74,39 @@ KeyState(Key)
     Return, False
 }
 
-PlayAsync(Path)
+PlayAsync(Path,Repeat = False)
 {
     StringReplace, Path, Path, `,, ```,, All
-    Script = 
-    (
-    #NoTrayIcon
-    SoundPlay, %Path%, WAIT
-    )
+    If Repeat
+    {
+        Script = 
+        (
+#NoTrayIcon
+DetectHiddenWindows, On
+SetTimer,c,1000
+Loop
+SoundPlay,%Path%,WAIT
+c:
+If !WinExist("ahk_id %A_ScriptHwnd%")
+ExitApp
+Return
+        )
+    }
+    Else
+    {
+        Script = 
+        (
+#NoTrayIcon
+DetectHiddenWindows, On
+SetTimer,c,1000
+SoundPlay,%Path%,WAIT
+ExitApp
+c:
+If !WinExist("ahk_id %A_ScriptHwnd%")
+ExitApp
+Return
+        )
+    }
     Execute(Script)
 }
 
