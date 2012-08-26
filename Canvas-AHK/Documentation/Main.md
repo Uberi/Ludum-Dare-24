@@ -146,10 +146,8 @@ Attaches surface _Surface_ (Canvas.Surface) to the viewport so that it is displa
 
 Returns the viewport object.
 
-### Canvas.Viewport.Refresh(X = 0,Y = 0,W = 0,H = 0)
-Refreshes the viewport to reflect changes in a region of its attached surface defined by X-axis coordinate _X_ (positive or zero units), Y-axis coordinate _Y_ (positive or zero units), width _W_ (positive or zero units), and height _H_ (positive or zero units).
-
-If _W_ is zero, it will be interpreted as the width of the currently attached surface (Canvas.Surface.Width). If _H_ is zero, it will be interpreted as the height of the currently attached surface (Canvas.Surface.Height).
+### Canvas.Viewport.Refresh()
+Refreshes the viewport to reflect changes in its attached surface.
 
 Returns the viewport object.
 

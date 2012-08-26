@@ -90,3 +90,10 @@ also a ripple or something for the water surface would go a long way..
 Uberi: neat! you should also take a look at the style I'm envisioning - "vintage" style with public domain graphics (a la WonderMark). I think this might be an improvement compared to hand-drawn graphics, considering I can't draw an ellipse without the ellipse tool or a square without a square tool and a general lack of time.
 Uberi: I'm thinking the music fits that sort of thing best, although this is a great start
 Uberi: also, what's up with the CPU usage? :P
+
+Uberi: good work! I think on Monday we can combine the best aspects of both our games together and make something really awesome :)
+
+
+no doubt.  i always get a dupe label error now on yours, i thinks its the guiclose:: in canvas.ahk
+
+i switched the sky/water colors, and i think it looks much better.. arrows left and right to swim faster/slower (still dont have fish in there yet, but thats trivial).. bedtime fo me.. deadline is coming fast, and a TON to do, not sure if we'll make it.. either way i had fun! :)

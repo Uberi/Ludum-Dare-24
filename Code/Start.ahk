@@ -18,7 +18,7 @@ StepStart(Duration)
     global Subtitle, Title, Prompt
     static Timer := 0
 
-    s.Clear()
+    s.Clear(0xFF000000)
 
     If Timer < 1
     {

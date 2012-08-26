@@ -15,19 +15,22 @@ s := new Canvas.Surface(Width,Height)
 s.Smooth := "Best"
 p := new Parasol
 
+Gui, Add, Text, x0 y0 w%Width% h%Height% hwndhControl +0xE ;SS_BITMAP
+v := new Canvas.Viewport(hControl)
+v.Attach(s)
+
 Gui, +LastFound
 hWindow := WinExist()
-hDC := DllCall("GetDC","UPtr",hWindow,"UPtr")
 
-Gui, Show, w%Width% h%Height%, Physics Test
+Gui, Show, w%Width% h%Height%, Evolutionary
 
 SoundPlay, %A_ScriptDir%\Sounds\Maple Leaf.mp3
 
 ;InitializeStart()
-;Activate(hDC,s,p,Func("StepStart"),DurationLimit)
+;Activate(v,s,p,Func("StepStart"),DurationLimit)
 
 InitializeGame()
-Activate(hDC,s,p,Func("StepGame"),DurationLimit)
+Activate(v,s,p,Func("StepGame"),DurationLimit)
 Return
 
 #Include %A_ScriptDir%\Code\Start.ahk
@@ -36,19 +39,7 @@ Return
 GuiClose:
 ExitApp
 
-TransparentCopy(Surface1,Surface2,Color,X,Y,W,H,SourceX = 0,SourceY = 0,SourceW = "",SourceH = "")
-{
-    If (SourceW = "")
-        SourceW := Surface1.Width
-    If (SourceH = "")
-        SourceH := Surface1.Height
-    If !DllCall("TransparentBlt","UPtr",Surface2.hMemoryDC,"Int",X,"Int",Y,"Int",W,"Int",H
-        ,"UPtr",Surface1.hMemoryDC,"Int",SourceX,"Int",SourceY,"Int",SourceW,"Int",SourceH
-        ,"UInt",Color)
-        throw Exception("It's not you, it's me.")
-}
-
-Activate(hDC,Surface,Parasol,Step,DurationLimit)
+Activate(Viewport,Surface,Parasol,Step,DurationLimit)
 {
     TickFrequency := 0, Ticks1 := 0, Ticks := 0
     If !DllCall("QueryPerformanceFrequency","Int64*",TickFrequency) ;obtain ticks per second
@@ -68,7 +59,7 @@ Activate(hDC,Surface,Parasol,Step,DurationLimit)
         If Step.(Duration)
             Break
         Parasol.Step(Duration)
-        DllCall("BitBlt","UPtr",hDC,"Int",0,"Int",0,"Int",Surface.Width,"Int",Surface.Height,"UPtr",Surface.hMemoryDC,"Int",0,"Int",0,"UInt",0xCC0020) ;SRCCOPY
+        Viewport.Refresh()
 
         Sleep, (DurationLimit - Duration) * 1000
     }

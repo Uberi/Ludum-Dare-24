@@ -52,12 +52,9 @@ s.Draw(i)
 f := new Canvas.Format("Georgia",18)
 s.Text(new Canvas.Brush(0xFFFFFFFF),f,"Earthrise: Dawn of a new era",30,80)
 
-Gui, +LastFound
-v := new Canvas.Viewport(WinExist()).Attach(s)
-
-p := new Canvas.Pen(0x80FF0000,10)
-t := new Canvas.Pen(0xFF00FF00,3)
-b := new Canvas.Brush(0xAA0000FF)
+Gui, Add, Text, x0 y0 w400 h400 hwndhControl +0xE ;SS_BITMAP
+v := new Canvas.Viewport(hControl)
+v.Attach(s).Refresh()
 
 Gui, Show, w400 h400, Canvas Demo
 Return
@@ -66,6 +63,9 @@ GuiClose:
 ExitApp
 
 Space::
+p := new Canvas.Pen(0x80FF0000,10)
+t := new Canvas.Pen(0xFF00FF00,3)
+b := new Canvas.Brush(0xAA0000FF)
 s.Clear(0xFFFFFF00)
  .Push()
  .Translate(50,50)
