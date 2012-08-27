@@ -97,3 +97,7 @@ Uberi: good work! I think on Monday we can combine the best aspects of both our 
 no doubt.  i always get a dupe label error now on yours, i thinks its the guiclose:: in canvas.ahk
 
 i switched the sky/water colors, and i think it looks much better.. arrows left and right to swim faster/slower (still dont have fish in there yet, but thats trivial).. bedtime fo me.. deadline is coming fast, and a TON to do, not sure if we'll make it.. either way i had fun! :)
+
+Uberi: your demo is looking awesome! make sure you release it at the forums! I see a lot of ideas I'm probably going to add to the final product. Indeed, this LD has been fun :)
+
+ton : lol.. thanks, it was indeed a great time.. i had started a level designer a couple of weeks ago for cell type games, and wish i had made more progress on it.. something like that, attached to your physics engine, and we would be rockin.. 

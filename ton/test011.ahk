@@ -1,6 +1,8 @@
 SetBatchLines -1
 #NoEnv
 #SingleInstance Force
+if (!FileExist("sprites008.bmp"))
+	URLDownloadToFile, http://www.autohotkey.net/~ton80/ludum/sprites008.bmp,%A_Scriptdir%/sprites008.bmp
 gosub, initialize_variables
 gosub, initialize_graphics
 gosub, initialize_objects							;this for testing only
@@ -13,7 +15,9 @@ loop
 		time_elapsed := (A_TickCount - time_update) / 1000
 		time_update := A_TickCount
 		offset := player.speed * time_elapsed
+		offset *= board.scale
 		offset_cloud := 2 * time_elapsed
+		offset_cloud *= board.scale
 		
 		Loop, Parse, all_controls, csv
 				If (GetKeyState(A_Loopfield, "P"))
@@ -39,99 +43,89 @@ if (player.y + player.height > seabed.y1)
 return
 
 left:
-player.speed -= 2
+player.speed -= board.width *.004
 if (player.speed < player.speed_min)
 	player.speed := player.speed_min
-
 player.x -= board.width *.002
 if (player.x < board.width *.1)
 	player.x := board.width * .1
 return
 
 right:
-player.speed += 2
+player.speed += board.width *.004
 if (player.speed > player.speed_max)
 	player.speed := player.speed_max
-
 player.x += board.width *.002
 if (player.x > board.width *.8)
 	player.x := board.width * .8
 return
 
-x::
-player.source_x += 64
-if (player.source_x > 192)
-	player.source_x := 0
-return
-
 check_collision:
 for index, sprite in enemies
 	if (player.x + player.width >= enemies[index].x) && (player.y >= enemies[index].y) && (player.x <= enemies[index].x + enemies[index].width) && (player.y <= enemies[index].y + enemies[index].height)
-	{
-		player.source_x += 64
-		sleep, 100
-	}
-if (player.source_x > 192)
-	player.x :=100, player.source_x := 0
+		{
+			player.step()
+			if (player.source_x = 0)
+				player.x := 100, player.source_x := 9,player.frame := 1
+		}
+	else player.source_x := 9,player.frame := 1
 return
 
 move_sprites:
 for index, sprite in plants
 	plants[index].offset(offset)
-
 for index, sprite in clouds
 	clouds[index].offset(offset_cloud)
-
 for index, sprite in enemies
 	{
+		enemies[index].step()
 		if (enemies[index].direction = 1)
-			enemies[index].offset(offset,-.3)
-		else
-			enemies[index].offset(offset,+.3)
+			enemies[index].offset(offset,-board.height *.001)
+		else if (enemies[index].direction = 3)
+			enemies[index].offset(offset,board.height *.001)
+		else 
+			enemies[index].offset(offset)
 		if (enemies[index].y + enemies[index].height >= seabed.y1 && enemies[index].direction = 3)
 			enemies[index].direction := 1
 		else if (enemies[index].y <= water.y1 && enemies[index].direction = 1)
 			enemies[index].direction := 3
+	}
+	
+for index, sprite in food
+	{
+		food[index].step()
+		if (food[index].direction = 1)
+			food[index].offset(offset,-board.height *.001)
+		else
+			food[index].offset(offset,board.height *.001)
+		if (food[index].y + food[index].height >= seabed.y1 && food[index].direction = 3)
+			food[index].direction := 1
+		else if (food[index].y <= water.y1 && food[index].direction = 1)
+			food[index].direction := 3
 	}
 return
 
 draw_sprites:
 for index, sprite in clouds
 	draw_transparent(clouds[index].x,clouds[index].y,clouds[index].width,clouds[index].height,clouds[index].source_x,clouds[index].source_y,clouds[index].source_width,clouds[index].source_height)
-
 for index, sprite in plants
 	draw_transparent(plants[index].x,plants[index].y,plants[index].width,plants[index].height,plants[index].source_x,plants[index].source_y,plants[index].source_width,plants[index].source_height)
-
 for index, sprite in enemies
 	draw_transparent(enemies[index].x,enemies[index].y,enemies[index].width,enemies[index].height,enemies[index].source_x,enemies[index].source_y,enemies[index].source_width,enemies[index].source_height)
-
+for index, sprite in food
+	draw_transparent(food[index].x,food[index].y,food[index].width,food[index].height,food[index].source_x,food[index].source_y,food[index].source_width,food[index].source_height)
 draw_transparent(player.x,player.y,player.width,player.height,player.source_x,player.source_y,player.source_width,player.source_height)
 return
 
 update_screen:			;blit buffer dc to window
 DllCall("BitBlt", "uint", hdcWin, "int", 0, "int", 0, "int", board.width, "int", board.height, "uint", hdcBuffer, "int", 0, "int", 0, "uint", 0xCC0020)
-
-;blit background back to buffer to clear it
 DllCall("BitBlt", "uint", hdcBuffer, "int", 0, "int", 0, "int", board.width, "int", board.height, "uint", hdcBackground, "int", 0, "int", 0, "uint", 0xCC0020)
-
 return
 
 initialize_variables:
-;notes
-;all speeds are in meters per second
 board := {width:A_ScreenWidth,height:A_ScreenHeight,x:0,y:0,backcolor: 0x32C7F0,scale:1,width_meters:160,height_meters:90}
 board.width *= board.scale, board.height *= board.scale
-
 pixels_per_meter := board.width / board.width_meters
-player := {height:board.height * .1,width:board.width * .15,x:100,y:board.height *.6,lives:3,speed:2 * pixels_per_meter,speed_max:30 * pixels_per_meter,speed_min:2 * pixels_per_meter,control_right:"right", control_left:"left", control_up:"up", control_down:"down",source_x:0,source_y:192,source_height:64,source_width:64}
-
-all_controls := player.control_right "," player.control_left "," player.control_up "," player.control_down
-
-cell := {rows:100,columns:200,showgrid:0,gridcolor:0xFFFFFF}
-cell.width := board.width / cell.columns
-cell.height := board.height / cell.rows
-cell.count := cell.rows * cell.columns
-
 water := {x1:0,y1:board.height *.4,x2:board.width,y2:board.height,color:0xB5480D}	;0xF0C732
 sky := {x1:0, y1:0, x2:board.width, y2:board.height *.4,color:0xF0C732}		;0xB5480D
 seabed := {x1:0,y1:board.height *.9,x2:board.width,y2:board.height,color:0x14AFE3}
@@ -142,7 +136,6 @@ VarSetCapacity(ptSky, 16, 0)
 NumPut(Sky.x1,ptSky,0), NumPut(Sky.y1, ptSky, 4),NumPut(Sky.x2,ptSky,8), NumPut(Sky.y2, ptSky, 12)
 VarSetCapacity(ptSeabed, 16, 0)
 NumPut(seabed.x1,ptSeabed,0), NumPut(seabed.y1, ptSeabed, 4),NumPut(seabed.x2,ptSeabed,8), NumPut(seabed.y2, ptSeabed, 12)
-
 time_update := A_TickCount
 return
 
@@ -152,18 +145,31 @@ clouds := [new sprite(board.width * .9,10,board.height * .2,board.width * .15,0,
 			,new sprite(board.width * .7,20,board.height * .2,board.width * .15,0,64,0,64,64)
 			,new sprite(board.width * .3,10,board.height * .2,board.width * .15,0,128,0,64,64)
 			,new sprite(board.width * .1,20,board.height * .2,board.width * .15,0,192,0,64,64)]
-
-
 plants := [new sprite(board.width,board.height *.8,board.height * .1, board.width * .1,1,0,64,64,64)	;also rocks
-			,new sprite(board.width * .7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
+			,new sprite(board.width * 1.7,board.height *.8,board.height * .1, board.width * .1,1,64,64,64,64)
 			,new sprite(board.width * .5,board.height *.8,board.height * .1, board.width * .1,1,128,64,64,64)
 			,new sprite(board.width * .3,board.height *.8,board.height * .1, board.width * .1,1,192,64,64,64)
-			,new sprite(board.width * .1,board.height *.85,board.height * .1, board.width * .1,1,0,128,64,64)
+			,new sprite(board.width * 1.1,board.height *.85,board.height * .1, board.width * .1,1,0,128,64,64)
 			,new sprite(board.width * .2,board.height *.85,board.height * .1, board.width * .1,1,64,128,64,64)
 			,new sprite(board.width * .6,board.height *.85,board.height * .1, board.width * .1,1,128,128,64,64)
-			,new sprite(board.width * .8,board.height *.85,board.height * .1, board.width * .1,1,192,128,64,64)]
+			,new sprite(board.width * 1.8,board.height *.85,board.height * .1, board.width * .1,1,192,128,64,64)]
+enemies := [new sprite(board.width *.7,board.height *.7,board.height * .15, board.width *.2,1,1,269,59,31,1,1,3,350,A_TickCount,1,0,1)
+			,new sprite(board.width *.5,board.height *.27,board.height * .25, board.width *.3,0,0,384,64,64,1,1,3,450,A_TickCount,1,0,1)]
+food := [new sprite(board.width *.9, board.height * .8, board.height *.05, board.width *.05,3,0,320,64,64,1,1,3,200,A_TickCount,0,1)
+		,new sprite(board.width * 1.5, board.height * .5, board.height *.03, board.width *.03,3,0,320,64,64,1,1,3,200,A_TickCount,0,1)
+		,new sprite(board.width *.7, board.height * .8, board.height *.032, board.width *.031,3,0,320,64,64,1,1,3,200,A_TickCount,0,1)
+		,new sprite(board.width * 1.2, board.height * .9, board.height *.033, board.width *.035,3,0,320,64,64,1,1,3,200,A_TickCount,0,1)]
+player := new sprite(board.width * .2,board.height *.7, board.height * .1, board.width * .15,0,9,206,55,46,1,1,3,200,A_TickCount)
+player.lives :=3
+player.speed := 2 * pixels_per_meter
+player.speed_max := 30 * pixels_per_meter
+player.speed_min := 2 * pixels_per_meter
+player.control_right := "right"
+player.control_left := "left"
+player.control_up := "up"
+player.control_down := "down"
 
-enemies := [new sprite(board.width *.7,board.height *.7,board.height * .15, board.width *.2,1,0,268,64,31)]
+all_controls := player.control_right "," player.control_left "," player.control_up "," player.control_down
 return
 
 initialize_graphics:
@@ -171,41 +177,29 @@ gui, -caption
 gui, color, %board_backcolor%
 gui, show, % "h"board.height "w"board.width "x"board.x "y"board.y
 hdcWin := DllCall("GetDC", "uint", hwnd:=WinExist("A"))
-
 hdcBackground := DllCall("CreateCompatibleDC", "uint", hdcWin)
 hbmBackground := DllCall("CreateCompatibleBitmap", "uint", hdcwin, "int", board.width, "int", board.height)
 DllCall("SelectObject", "uint", hdcBackground, "uint", hbmBackground)
-
 hdcBuffer := DllCall("CreateCompatibleDC", "uint", hdcWin)
 hbmBuffer := DllCall("CreateCompatibleBitmap", "uint", hdcwin, "int", board.width, "int", board.height)
 DllCall("SelectObject", "uint", hdcBuffer, "uint", hbmBuffer)
-
 hdcSprites := DllCall("CreateCompatibleDC", "uint", hdcWin)
 hbmSprites := DllCall("CreateCompatibleBitmap", "uint", hdcwin, "int", board.width, "int", board.height)
 DllCall("SelectObject", "uint", hdcSprites, "uint", hbmSprites)
-
-
 brush_background := DllCall("CreateSolidBrush", "int", board_backcolor)
-
 brush_Water := DllCall("CreateSolidBrush", "uint", water.color)
 brush_Sky := DllCall("CreateSolidBrush", "uint", Sky.color)
 brush_Sun := DllCall("CreateSolidBrush", "int", Sun.color)
 brush_Seabed := DllCall("CreateSolidBrush", "int", Seabed.color)
-
 pen_black := DllCall("CreatePen", int, 1, int, 5, int, 0x000000)
-
 DllCall("SelectObject", "uint", hdcBackground, "uint", brush_Sun)
 DllCall("SelectObject", "uint", hdcBackground, "uint", pen_black)
-
-hbmBM := DllCall("LoadImage", "int", 0, str, "sprites006.bmp", "int", 0, "int", 0, "int",0, "uint", 0x2010)
+hbmBM := DllCall("LoadImage", "int", 0, str, "sprites008.bmp", "int", 0, "int", 0, "int",0, "uint", 0x2010)
 maskBM := CreateBitMapMask(hbmBM, 0x1DE6B5)
-
-;redraw rough water, sky, seabed,and sun ; this wont change, so draw them now.
 DllCall("FillRect", "uint", hdcBackground, "uint", &ptWater, "uint", brush_Water)
 DllCall("FillRect", "uint", hdcBackground, "uint", &ptSky, "uint", brush_Sky)
 DllCall("FillRect", "uint", hdcBackground, "uint", &ptSeabed, "uint", brush_Seabed)
 DllCall("Ellipse", "uint", hdcBackground, "int", sun.x1, "int", sun.y1, "int", sun.x2, "int", sun.y2)
-
 all_dcs := "hdcBackground,hdcBuffer,hdcSprites"
 all_objects := "brush_background,brush_water,brush_sky,brush_sun,brush_seabed,pen_black,hbmBM,maskBM"
 return
@@ -266,12 +260,11 @@ class sprite
 	this.isEnemy := isEnemy
 	this.isFood := isFood
 	this.player_death_type := player_death_type
-	
 	if (this.frame_lastchange = 0)
 		this.frame_lastchange := A_TickCount
 	}
 	
-	Offset(x=0,y=0){
+	Offset(x=0,y=0){											;move sprite
 	this.x -= x
 	this.y += y
 	if (this.x + this.width < 0)
@@ -281,13 +274,14 @@ class sprite
 		}
 	}
 	
-	step(){
+	step(){														;display next frame of animated sprite
 	if (!this.animated)											;sprite not animated
 		return
-	if (A_TickCount - frame_lastchange < frame_delay)			;sprite not ready to change to next frame
+	if (A_TickCount - this.frame_lastchange < this.frame_delay)			;sprite not ready to change to next frame
 		return
-	this.source_x := 64
-	if (this.source_x / 64 > frame_count)
+	this.source_x += 64
+	if (this.source_x / 64 > this.frame_count)
 		this.source_x := 0
+	this.frame_lastchange := A_TickCount
 	}
 }

@@ -30,10 +30,15 @@ Activate(v,s,p,Func("StepStart"),DurationLimit)
 
 InitializeGame()
 Activate(v,s,p,Func("StepGame"),DurationLimit)
-Return
+
+InitializeEnd()
+Activate(v,s,p,Func("StepEnd"),DurationLimit)
+Reload
+ExitApp
 
 #Include %A_ScriptDir%\Code\Start.ahk
 #Include %A_ScriptDir%\Code\Game.ahk
+#Include %A_ScriptDir%\Code\End.ahk
 
 GuiClose:
 ExitApp
