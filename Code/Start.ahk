@@ -43,7 +43,7 @@ StepStart(Duration)
 
         s.Clear()
          .Draw(Fishing)
-         .Text(White,Title,"Evolutionary",0,200,800)
+         .Text(White,Title,"Out of the Sea",0,200,800)
          .Text(White,Prompt,"Press Space to play.",0,500,800)
          .Text(White,Subtitle,"Lovingly crafted during Ludum Dare #24 (theme: evolution)",50,50)
 

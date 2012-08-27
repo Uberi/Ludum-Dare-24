@@ -21,7 +21,7 @@ v.Attach(s)
 Gui, +LastFound
 hWindow := WinExist()
 
-Gui, Show, w%Width% h%Height%, Evolutionary
+Gui, Show, w%Width% h%Height%, Out of the Sea
 
 PlayAsync(A_ScriptDir . "\Sounds\Maple Leaf.mp3",True)
 
